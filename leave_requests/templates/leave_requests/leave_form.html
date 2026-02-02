@@ -1,0 +1,52 @@
+{% extends 'leave_requests/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h2>{{ title }}</h2>
+
+{% if form.non_field_errors %}
+<ul>
+    {% for error in form.non_field_errors %}
+    <li style="color: red;">{{ error }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<form method="post">
+    {% csrf_token %}
+    <p>
+        <label for="{{ form.person.id_for_label }}">Person:</label><br>
+        {{ form.person }}
+        {% if form.person.errors %}
+        <br><span style="color: red;">{{ form.person.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+    <p>
+        <label for="{{ form.leave_type.id_for_label }}">Leave Type:</label><br>
+        {{ form.leave_type }}
+        {% if form.leave_type.errors %}
+        <br><span style="color: red;">{{ form.leave_type.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+    <p>
+        <label for="{{ form.start_date.id_for_label }}">Start Date:</label><br>
+        {{ form.start_date }}
+        {% if form.start_date.errors %}
+        <br><span style="color: red;">{{ form.start_date.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+    <p>
+        <label for="{{ form.end_date.id_for_label }}">End Date:</label><br>
+        {{ form.end_date }}
+        {% if form.end_date.errors %}
+        <br><span style="color: red;">{{ form.end_date.errors|join:", " }}</span>
+        {% endif %}
+    </p>
+    <p>
+        <button type="submit">{{ button_text }}</button>
+    </p>
+</form>
+
+<p><a href="{% url 'leave_list' %}">Back to list</a></p>
+{% endblock %}

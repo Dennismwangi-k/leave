@@ -1,0 +1,27 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Leave Request System{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'leave_requests/style.css' %}">
+  </head>
+  <body>
+    <header>
+        <div class="container header-content">
+            <h1><a href="{% url 'leave_list' %}" style="text-decoration: none; color: inherit;">Leave Request System</a></h1>
+            <nav class="nav-links">
+                <a href="{% url 'leave_list' %}">All Requests</a>
+            
+            </nav>
+        </div>
+    </header>
+    
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+  
+  </body>
+</html>

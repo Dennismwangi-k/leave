@@ -1,0 +1,8 @@
+#!/Users/dennis/Projects/951bb7a768aa0abc27496b4302cd012d-de95afa309c1493b5b849eb50d13bd038001d385/venv/bin/python3
+# -*- coding: utf-8 -*-
+import re
+import sys
+from django.core.management import execute_from_command_line
+if __name__ == '__main__':
+    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.exit(execute_from_command_line())

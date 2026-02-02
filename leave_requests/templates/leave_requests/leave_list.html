@@ -1,0 +1,162 @@
+{% extends 'leave_requests/base.html' %}
+
+{% block title %}Leave Requests{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h2 style="margin: 0;">Leave Requests</h2>
+        <button id="openModalBtn" class="btn btn-primary">
+            + New Request
+        </button>
+    </div>
+
+    {% if leave_requests %}
+    <div style="overflow-x: auto;">
+        <table>
+        <thead>
+            <tr>
+            <th>Person</th>
+            <th>Leave Type</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Days</th>
+            <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in leave_requests %}
+            <tr>
+            <td style="font-weight: 500;">{{ request.person }}</td>
+            <td>
+                <span style="padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; background-color: {% if request.leave_type == 'sick' %}#fee2e2; color: #991b1b;{% else %}#dbeafe; color: #1e40af;{% endif %}">
+                    {{ request.get_leave_type_display }}
+                </span>
+            </td>
+            <td>{{ request.start_date }}</td>
+            <td>{{ request.end_date }}</td>
+            <td>{{ request.leave_days }}</td>
+            <td><button 
+                class="btn btn-secondary" 
+                style="padding: 0.25rem 0.5rem; font-size: 0.75rem;"
+                onclick="openEditModal(this)"
+                data-pk="{{ request.pk }}"
+                data-person="{{ request.person }}"
+                data-leavetype="{{ request.leave_type }}"
+                data-start="{{ request.start_date|date:'Y-m-d' }}"
+                data-end="{{ request.end_date|date:'Y-m-d' }}"
+                data-action="{% url 'leave_edit' request.pk %}"
+            >Edit</button></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-secondary); text-align: center; padding: 2rem;">No leave requests submitted yet.</p>
+    {% endif %}
+</div>
+
+<div id="leaveModal" class="modal {% if show_modal %}show{% endif %}" {% if show_modal %}style="display: flex;"{% endif %}>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modalTitle">{{ title }}</h3>
+            <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <form id="leaveForm" action="" method="post">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                <small style="color: var(--text-secondary); font-size: 0.75rem;">{{ field.help_text }}</small>
+                {% endif %}
+                {% if field.errors %}
+                <div style="color: #ef4444; font-size: 0.875rem; margin-top: 0.25rem;">
+                    {% for error in field.errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+            
+            {% if form.non_field_errors %}
+             <div style="color: #ef4444; font-size: 0.875rem; margin-bottom: 1rem;">
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">{{ button_text|default:"Submit Request" }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('leaveModal');
+    const form = document.getElementById('leaveForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Create Mode Trigger
+    document.getElementById('openModalBtn').addEventListener('click', () => {
+        openModal();
+        // Reset for create
+        form.action = "{% url 'leave_list' %}"; // Assumes list URL handles create
+        modalTitle.textContent = "Submit New Leave Request";
+        submitBtn.textContent = "Submit Request";
+        
+        // Clear fields (simple reset, might not work perfectly if widget rendered with value)
+        form.reset();
+        // Manually clear if reset doesn't hit value attrs hardcoded by django
+        Array.from(form.elements).forEach(el => {
+            if (el.name && el.name !== 'csrfmiddlewaretoken') el.value = '';
+            if (el.tagName === 'SELECT') el.selectedIndex = 0;
+        });
+    });
+
+    function openEditModal(btn) {
+        openModal();
+        const data = btn.dataset;
+        form.action = data.action;
+        modalTitle.textContent = "Edit Leave Request";
+        submitBtn.textContent = "Update Request";
+
+        // Populate fields matching django default IDs
+        // person -> id_person
+        if(document.getElementById('id_person')) document.getElementById('id_person').value = data.person;
+        if(document.getElementById('id_leave_type')) document.getElementById('id_leave_type').value = data.leavetype;
+        if(document.getElementById('id_start_date')) document.getElementById('id_start_date').value = data.start;
+        if(document.getElementById('id_end_date')) document.getElementById('id_end_date').value = data.end;
+    }
+
+    function openModal() {
+        modal.style.display = 'flex';
+        void modal.offsetWidth;
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300); 
+    }
+
+    document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+    document.getElementById('cancelBtn').addEventListener('click', closeModal);
+
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+</script>
+{% endblock %}
