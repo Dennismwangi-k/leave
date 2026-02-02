@@ -31,14 +31,14 @@ The core logic for calculating leave days is located in the `LeaveRequest` model
 1.  **Apply database migrations:**
 
     ```bash
-    python manage.py makemigrations
-    python manage.py migrate
+    python3 manage.py makemigrations
+    python3 manage.py migrate
     ```
 
 2.  **Start the development server:**
 
     ```bash
-    python manage.py runserver
+    python3 manage.py runserver
     ```
 
 3.  **Access the application:**
@@ -49,5 +49,5 @@ The core logic for calculating leave days is located in the `LeaveRequest` model
 To run the automated tests:
 
 ```bash
-python manage.py test
+python3 manage.py test
 ```
