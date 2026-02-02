@@ -55,7 +55,6 @@ class LeaveRequestViewTest(TestCase):
             'leave_type': 'sick'
         }
         response = self.client.post(url, data)
-        # Should redirect after success to the list view
         self.assertRedirects(response, url)
         self.assertTrue(LeaveRequest.objects.filter(person='New Person').exists())
 
@@ -63,10 +62,9 @@ class LeaveRequestViewTest(TestCase):
         url = reverse('leave_list')
         data = {
             'person': 'Incomplete Person',
-            # Mission dates
         }
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 200) # Re-renders page
+        self.assertEqual(response.status_code, 200)
         self.assertIn('show_modal', response.context)
         self.assertTrue(response.context['show_modal'])
         self.assertFalse(LeaveRequest.objects.filter(person='Incomplete Person').exists())

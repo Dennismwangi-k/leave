@@ -105,17 +105,14 @@
     const modalTitle = document.getElementById('modalTitle');
     const submitBtn = document.getElementById('submitBtn');
     
-    // Create Mode Trigger
+  
     document.getElementById('openModalBtn').addEventListener('click', () => {
         openModal();
-        // Reset for create
-        form.action = "{% url 'leave_list' %}"; // Assumes list URL handles create
+        form.action = "{% url 'leave_list' %}";
         modalTitle.textContent = "Submit New Leave Request";
         submitBtn.textContent = "Submit Request";
         
-        // Clear fields (simple reset, might not work perfectly if widget rendered with value)
         form.reset();
-        // Manually clear if reset doesn't hit value attrs hardcoded by django
         Array.from(form.elements).forEach(el => {
             if (el.name && el.name !== 'csrfmiddlewaretoken') el.value = '';
             if (el.tagName === 'SELECT') el.selectedIndex = 0;
@@ -129,8 +126,6 @@
         modalTitle.textContent = "Edit Leave Request";
         submitBtn.textContent = "Update Request";
 
-        // Populate fields matching django default IDs
-        // person -> id_person
         if(document.getElementById('id_person')) document.getElementById('id_person').value = data.person;
         if(document.getElementById('id_leave_type')) document.getElementById('id_leave_type').value = data.leavetype;
         if(document.getElementById('id_start_date')) document.getElementById('id_start_date').value = data.start;
